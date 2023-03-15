@@ -1,16 +1,17 @@
 from rest_framework.views import APIView, Request, Response, status
+from rest_framework import generics
 from .models import User
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from .serializers import UserSerializer
 from django.shortcuts import get_object_or_404
 from .permissions import IsAccountOwner
 
+"""
+
+Código legado abaixo.
 
 class UserView(APIView):
     def post(self, request: Request) -> Response:
-        """
-        Registro de usuários
-        """
         serializer = UserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -24,9 +25,6 @@ class UserDetailView(APIView):
     permission_classes = [IsAccountOwner]
 
     def get(self, request: Request, pk: int) -> Response:
-        """
-        Obtençao de usuário
-        """
         user = get_object_or_404(User, pk=pk)
 
         self.check_object_permissions(request, user)
@@ -36,9 +34,6 @@ class UserDetailView(APIView):
         return Response(serializer.data)
 
     def patch(self, request: Request, pk: int) -> Response:
-        """
-        Atualização de usuário
-        """
         user = get_object_or_404(User, pk=pk)
 
         self.check_object_permissions(request, user)
@@ -50,9 +45,6 @@ class UserDetailView(APIView):
         return Response(serializer.data)
 
     def delete(self, request: Request, pk: int) -> Response:
-        """
-        Deleçao de usuário
-        """
         user = get_object_or_404(User, pk=pk)
 
         self.check_object_permissions(request, user)
@@ -60,3 +52,17 @@ class UserDetailView(APIView):
         user.delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+"""
+
+class UserView(generics.CreateAPIView):
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
+class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAccountOwner]
+
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
+    lookup_url_kwarg = "pk"
