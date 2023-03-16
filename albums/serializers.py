@@ -8,7 +8,4 @@ class AlbumSerializer(serializers.ModelSerializer):
         model = Album
         fields = ['id', 'name', 'year', 'user_id']
         read_only_fields = ['id', 'user_id']
-
-
-    def create(self, validated_data):
-        return Album.objects.create(**validated_data)
+        depth = 1
